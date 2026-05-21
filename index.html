@@ -30,7 +30,7 @@
     }
 
     .container {
-      max-width:500px;
+      max-width:1200px;
       margin:auto;
     }
 
@@ -71,8 +71,8 @@
 
     /* ================= MENU ================= */
     nav.menu {
-      display:flex;
-      flex-direction:column;
+      display:grid;
+      grid-template-columns:1fr;
       gap:18px;
     }
 
@@ -184,6 +184,37 @@
       border:none;
       background:white;
     }
+
+    /* ================= RESPONSIVE ================= */
+    @media (min-width:600px) {
+      nav.menu {
+        grid-template-columns:1fr 1fr;
+      }
+      h1 { font-size:28px; }
+    }
+
+    @media (min-width:900px) {
+      nav.menu {
+        grid-template-columns:repeat(3,1fr);
+      }
+      h1 { font-size:32px; }
+      .logo { width:180px; height:180px; }
+    }
+
+    @media (max-width:400px) {
+      .btn {
+        flex-direction:column;
+        text-align:center;
+        gap:10px;
+      }
+      .icon {
+        width:45px;
+        height:45px;
+        font-size:24px;
+      }
+      .title { font-size:16px; }
+      .desc { font-size:12px; }
+    }
   </style>
 </head>
 
@@ -198,49 +229,10 @@
     </header>
 
     <nav class="menu" aria-label="Menú de sitios">
-      <!-- Ejemplo de botón reutilizable -->
-      <div class="btn" role="button" tabindex="0" onclick="abrirFormulario('HBI BUENA VISTA','https://app.smartsheet.com/b/form/019e236242c072328babf2c9ab7b82aa')">
-        <div class="icon">🏢</div>
-        <div class="text">
-          <div class="title">HBI BUENA VISTA</div>
-          <div class="desc">Abrir formulario de rondas</div>
-        </div>
-      </div>
-      <!-- Repite para los demás sitios -->
-    </nav>
-  
-    <footer>
-      GSD CMC © 2026
-    </footer>
-  </div>
-
-  <!-- ================= VISOR INTERNO ================= -->
-  <div id="viewer" role="dialog" aria-modal="true">
-    <div class="topbar">
-      <button class="back-btn" onclick="cerrarFormulario()" aria-label="Cerrar formulario">←</button>
-      <div class="site-name" id="siteName">Sitio</div>
-    </div>
-    <iframe id="formFrame" title="Formulario de rondas"></iframe>
-  </div>
-
-  <script>
-    function abrirFormulario(nombre,link){
-      const viewer = document.getElementById("viewer");
-      const siteName = document.getElementById("siteName");
-      const formFrame = document.getElementById("formFrame");
-
-      viewer.style.display="flex";
-      siteName.innerText=nombre;
-      formFrame.src=link;
-    }
-
-    function cerrarFormulario(){
-      const viewer = document.getElementById("viewer");
-      const formFrame = document.getElementById("formFrame");
-
-      viewer.style.display="none";
-      formFrame.src="";
-    }
-  </script>
-</body>
-</html>
+      <div class="btn" onclick="abrirFormulario('HBI BUENA VISTA','https://app.smartsheet.com/b/form/019e236242c072328babf2c9ab7b82aa')"><div class="icon">🏢</div><div class="text"><div class="title">HBI BUENA VISTA</div><div class="desc">Abrir formulario de rondas</div></div></div>
+      <div class="btn" onclick="abrirFormulario('HBI CHOLOMA','https://app.smartsheet.com/b/form/019e284bf3cb783fb7652e7732d1bf1d')"><div class="icon">🏢</div><div class="text"><div class="title">HBI CHOLOMA</div><div class="desc">Abrir formulario de rondas</div></div></div>
+      <div class="btn" onclick="abrirFormulario('HANIL','https://app.smartsheet.com/b/form/019e235ba99173d09adc57ea088319e2')"><div class="icon">🏢</div><div class="text"><div class="title">HANIL</div><div class="desc">Abrir formulario de rondas</div></div></div>
+      <div class="btn" onclick="abrirFormulario('RIO NANCE','https://app.smartsheet.com/b/form/019e236361a9756cbfa026972cd70acd')"><div class="icon">🏢</div><div class="text"><div class="title">RIO NANCE</div><div class="desc">Abrir formulario de rondas</div></div></div>
+      <div class="btn" onclick="abrirFormulario('SAN ANTONIO','https://app.smartsheet.com/b/form/019e1cf7fe82780388f99a9a810779e0')"><div class="icon">🏢</div><div class="text"><div class="title">SAN ANTONIO</div><div class="desc">Abrir formulario de rondas</div></div></div>
+      <div class="btn" onclick="abrirFormulario('ULUATEX','https://app.smartsheet.com/b/form/019e2361a099722dbb9c8e455a61a5ef')"><div class="icon">🏢</div><div class="text"><div class="title">ULUATEX</div><div class="desc">Abrir formulario de rondas</div></div></div>
+      <div class="btn" onclick="abrirFormulario('VILLANUEVA','https://app.smartsheet.com/b/form/019e2353c2997fb18ed2cf1fbff5c1c1')"><div class="icon">🏢</div><div class="text"><div class="title">VILLANUEVA</div><div class="desc">Abrir formulario de rondas
