@@ -318,18 +318,113 @@ h1{
 
 <script>
 
-/* ================= ABRIR FORMULARIO ================= */
+/* =====================================================
+   USUARIOS Y PERMISOS
+===================================================== */
 
-function abrirFormulario(nombre,link){
+const usuarios = {
+
+    /* ================= GUARDIAS ================= */
+
+    "000000": {
+        nombre: "Guardia 1",
+        rol: "Guardia",
+        formularios: ["HBI BUENA VISTA"]
+    },
+
+    "000001": {
+        nombre: "Guardia 2",
+        rol: "Guardia",
+        formularios: ["HBI CHOLOMA"]
+    },
+
+    "000002": {
+        nombre: "Guardia 3",
+        rol: "Guardia",
+        formularios: ["HANIL"]
+    },
+
+    /*
+        AGREGA LOS DEMÁS GUARDIAS
+    */
+
+    /* ================= SUPERVISORES ================= */
+
+    "SUP001": {
+        nombre: "Supervisor 1",
+        rol: "Supervisor",
+        formularios: [
+            "HBI BUENA VISTA",
+            "HBI CHOLOMA",
+            "HANIL",
+            "RIO NANCE",
+            "SAN ANTONIO",
+            "ULUATEX",
+            "VILLANUEVA",
+            "ZOLI AMERICA"
+        ]
+    },
+
+    "SUP002": {
+        nombre: "Supervisor 2",
+        rol: "Supervisor",
+        formularios: [
+            "HANIL",
+            "RIO NANCE"
+        ]
+    }
+
+};
+
+/* =====================================================
+   LOGIN
+===================================================== */
+
+function abrirFormulario(nombre, link){
+
+    const usuario = prompt("Ingrese su usuario");
+
+    if(usuario === null || usuario.trim() === ""){
+        alert("Debe ingresar un usuario");
+        return;
+    }
+
+    /* VALIDAR USUARIO */
+
+    if(!usuarios[usuario]){
+
+        alert("Usuario no válido");
+        return;
+    }
+
+    const datosUsuario = usuarios[usuario];
+
+    /* VALIDAR PERMISOS */
+
+    if(!datosUsuario.formularios.includes(nombre)){
+
+        alert(
+            "Acceso denegado.\n\n" +
+            datosUsuario.nombre +
+            " no tiene permiso para ingresar a este formulario."
+        );
+
+        return;
+    }
+
+    /* ABRIR FORMULARIO */
 
     document.getElementById("viewer").style.display="flex";
 
-    document.getElementById("siteName").innerText=nombre;
+    document.getElementById("siteName").innerText=
+        nombre + " | " + datosUsuario.nombre;
 
     document.getElementById("formFrame").src=link;
 }
 
-/* ================= CERRAR FORMULARIO ================= */
+/* =====================================================
+   CERRAR FORMULARIO
+===================================================== */
 
 function cerrarFormulario(){
 
@@ -339,6 +434,3 @@ function cerrarFormulario(){
 }
 
 </script>
-
-</body>
-</html>
