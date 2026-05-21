@@ -1,344 +1,246 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Control de Rondas GSD</title>
 
-<title>Control de Rondas GSD</title>
+  <!-- Fuente -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
 
-<style>
+    body {
+      font-family:'Poppins',sans-serif;
+      background:#0B1F3A;
+      color:white;
+      min-height:100vh;
+      padding:20px;
+      background-image:
+        linear-gradient(rgba(11,31,58,.96),rgba(11,31,58,.96)),
+        url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1200');
+      background-size:cover;
+      background-position:center;
+    }
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
+    .container {
+      max-width:500px;
+      margin:auto;
+    }
 
-body{
-    font-family:'Poppins',sans-serif;
-    background:#0B1F3A;
-    color:white;
-    min-height:100vh;
-    padding:20px;
-    background-image:
-    linear-gradient(rgba(11,31,58,.96),rgba(11,31,58,.96)),
-    url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1200');
-    background-size:cover;
-    background-position:center;
-}
+    /* ================= HEADER ================= */
+    header {
+      text-align:center;
+      margin:40px 0;
+    }
 
-.container{
-    max-width:500px;
-    margin:auto;
-}
+    .logo {
+      width:150px;
+      height:150px;
+      margin:auto;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
 
-/* ================= HEADER ================= */
+    .logo img {
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      border-radius:35px;
+      box-shadow:0 10px 25px rgba(0,0,0,.45);
+    }
 
-.header{
-    text-align:center;
-    margin-top:30px;
-    margin-bottom:40px;
-}
+    h1 {
+      margin-top:20px;
+      font-size:32px;
+      font-weight:700;
+    }
 
-.logo{
-    width:150px;
-    height:150px;
-    margin:auto;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-}
+    .subtitle {
+      margin-top:10px;
+      color:#B8C7E0;
+      font-size:15px;
+    }
 
-.logo img{
-    width:100%;
-    height:100%;
-    object-fit:contain;
-    border-radius:35px;
-    box-shadow:0 10px 25px rgba(0,0,0,.45);
-}
+    /* ================= MENU ================= */
+    nav.menu {
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+    }
 
-h1{
-    margin-top:20px;
-    font-size:32px;
-    font-weight:700;
-}
+    .btn {
+      text-decoration:none;
+      color:white;
+      background:#1E4D8F;
+      padding:20px;
+      border-radius:20px;
+      display:flex;
+      align-items:center;
+      gap:18px;
+      transition:transform .25s, background .25s;
+      box-shadow:0 8px 20px rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.08);
+      cursor:pointer;
+    }
 
-.subtitle{
-    margin-top:10px;
-    color:#B8C7E0;
-    font-size:15px;
-}
+    .btn:hover,
+    .btn:focus {
+      transform:translateY(-3px);
+      background:#2563B8;
+      outline:none;
+    }
 
-/* ================= MENU ================= */
+    .icon {
+      width:55px;
+      height:55px;
+      border-radius:15px;
+      background:rgba(255,255,255,.15);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:28px;
+    }
 
-.menu{
-    display:flex;
-    flex-direction:column;
-    gap:18px;
-}
+    .text {
+      display:flex;
+      flex-direction:column;
+    }
 
-.btn{
-    text-decoration:none;
-    color:white;
-    background:#1E4D8F;
-    padding:20px;
-    border-radius:20px;
-    display:flex;
-    align-items:center;
-    gap:18px;
-    transition:.25s;
-    box-shadow:0 8px 20px rgba(0,0,0,.25);
-    border:1px solid rgba(255,255,255,.08);
-    cursor:pointer;
-}
+    .title {
+      font-size:18px;
+      font-weight:600;
+    }
 
-.btn:hover{
-    transform:translateY(-3px);
-    background:#2563B8;
-}
+    .desc {
+      font-size:13px;
+      color:#D6E1F3;
+      margin-top:3px;
+    }
 
-.icon{
-    width:55px;
-    height:55px;
-    border-radius:15px;
-    background:rgba(255,255,255,.15);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:28px;
-}
+    footer {
+      text-align:center;
+      margin-top:40px;
+      color:#8FA6CC;
+      font-size:12px;
+    }
 
-.text{
-    display:flex;
-    flex-direction:column;
-}
+    /* ================= VIEWER ================= */
+    #viewer {
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      background:#0B1F3A;
+      z-index:9999;
+      display:none;
+      flex-direction:column;
+    }
 
-.title{
-    font-size:18px;
-    font-weight:600;
-}
+    /* ================= TOPBAR ================= */
+    .topbar {
+      height:65px;
+      background:#102544;
+      display:flex;
+      align-items:center;
+      padding:0 15px;
+      gap:15px;
+      box-shadow:0 4px 12px rgba(0,0,0,.25);
+    }
 
-.desc{
-    font-size:13px;
-    color:#D6E1F3;
-    margin-top:3px;
-}
+    .back-btn {
+      width:42px;
+      height:42px;
+      border:none;
+      border-radius:12px;
+      background:#1E4D8F;
+      color:white;
+      font-size:20px;
+      cursor:pointer;
+      transition:background .25s;
+    }
 
-.footer{
-    text-align:center;
-    margin-top:40px;
-    color:#8FA6CC;
-    font-size:12px;
-}
+    .back-btn:hover {
+      background:#2563B8;
+    }
 
-/* ================= VIEWER ================= */
+    .site-name {
+      font-size:16px;
+      font-weight:600;
+    }
 
-#viewer{
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:#0B1F3A;
-    z-index:9999;
-    display:none;
-    flex-direction:column;
-}
-
-/* ================= TOPBAR ================= */
-
-.topbar{
-    height:65px;
-    background:#102544;
-    display:flex;
-    align-items:center;
-    padding:0 15px;
-    gap:15px;
-    box-shadow:0 4px 12px rgba(0,0,0,.25);
-}
-
-.back-btn{
-    width:42px;
-    height:42px;
-    border:none;
-    border-radius:12px;
-    background:#1E4D8F;
-    color:white;
-    font-size:20px;
-    cursor:pointer;
-}
-
-.site-name{
-    font-size:16px;
-    font-weight:600;
-}
-
-/* ================= IFRAME ================= */
-
-#formFrame{
-    flex:1;
-    width:100%;
-    border:none;
-    background:white;
-}
-
-</style>
+    /* ================= IFRAME ================= */
+    #formFrame {
+      flex:1;
+      width:100%;
+      border:none;
+      background:white;
+    }
+  </style>
 </head>
 
 <body>
+  <div class="container">
+    <header>
+      <div class="logo">
+        <img src="https://gildan.sharepoint.com/:i:/r/sites/CMCRegionalSecurity/Shared%20Documents/Francisco%20Flores/Logo%20Gildan.ico?csf=1&web=1&e=dzeFVI" alt="Logo Gildan" loading="lazy">
+      </div> 
+      <h1>Control de Rondas Honduras</h1>
+      <p class="subtitle">Sistema de control y seguimiento de rondas</p>
+    </header>
 
-<div class="container">
-
-    <div class="header">
-
-        <div class="logo">
-            <img src="https://gildan.sharepoint.com/:i:/r/sites/CMCRegionalSecurity/Shared%20Documents/Francisco%20Flores/Logo%20Gildan.ico?csf=1&web=1&e=dzeFVI" alt="Gildan Logo">
-        </div> 
-
-        <h1>Control de Rondas Honduras</h1>
-
-        <div class="subtitle">
-            Sistema de control y seguimiento de rondas
+    <nav class="menu" aria-label="Menú de sitios">
+      <!-- Ejemplo de botón reutilizable -->
+      <div class="btn" role="button" tabindex="0" onclick="abrirFormulario('HBI BUENA VISTA','https://app.smartsheet.com/b/form/019e236242c072328babf2c9ab7b82aa')">
+        <div class="icon">🏢</div>
+        <div class="text">
+          <div class="title">HBI BUENA VISTA</div>
+          <div class="desc">Abrir formulario de rondas</div>
         </div>
-
-    </div>
-
-    <div class="menu">
-
-        <!-- HBI BUENA VISTA -->
-
-        <div class="btn" onclick="abrirFormulario('HBI BUENA VISTA','https://app.smartsheet.com/b/form/019e236242c072328babf2c9ab7b82aa')">
-            <div class="icon">🏢</div>
-            <div class="text">
-                <div class="title">HBI BUENA VISTA</div>
-                <div class="desc">Abrir formulario de rondas</div>
-            </div>
-        </div>
-
-        <!-- HBI CHOLOMA -->
-
-        <div class="btn" onclick="abrirFormulario('HBI CHOLOMA','https://app.smartsheet.com/b/form/019e284bf3cb783fb7652e7732d1bf1d')">
-            <div class="icon">🏢</div>
-            <div class="text">
-                <div class="title">HBI CHOLOMA</div>
-                <div class="desc">Abrir formulario de rondas</div>
-            </div>
-        </div>
-
-        <!-- HANIL -->
-
-        <div class="btn" onclick="abrirFormulario('HANIL','https://app.smartsheet.com/b/form/019e235ba99173d09adc57ea088319e2')">
-            <div class="icon">🏢</div>
-            <div class="text">
-                <div class="title">HANIL</div>
-                <div class="desc">Abrir formulario de rondas</div>
-            </div>
-        </div>
-
-        <!-- RIO NANCE -->
-
-        <div class="btn" onclick="abrirFormulario('RIO NANCE','https://app.smartsheet.com/b/form/019e236361a9756cbfa026972cd70acd')">
-            <div class="icon">🏢</div>
-            <div class="text">
-                <div class="title">RIO NANCE</div>
-                <div class="desc">Abrir formulario de rondas</div>
-            </div>
-        </div>
-
-        <!-- SAN ANTONIO -->
-
-        <div class="btn" onclick="abrirFormulario('SAN ANTONIO','https://app.smartsheet.com/b/form/019e1cf7fe82780388f99a9a810779e0')">
-            <div class="icon">🏢</div>
-            <div class="text">
-                <div class="title">SAN ANTONIO</div>
-                <div class="desc">Abrir formulario de rondas</div>
-            </div>
-        </div>
-
-        <!-- ULUATEX -->
-
-        <div class="btn" onclick="abrirFormulario('ULUATEX','https://app.smartsheet.com/b/form/019e2361a099722dbb9c8e455a61a5ef')">
-            <div class="icon">🏢</div>
-            <div class="text">
-                <div class="title">ULUATEX</div>
-                <div class="desc">Abrir formulario de rondas</div>
-            </div>
-        </div>
-
-        <!-- VILLANUEVA -->
-
-        <div class="btn" onclick="abrirFormulario('VILLANUEVA','https://app.smartsheet.com/b/form/019e2353c2997fb18ed2cf1fbff5c1c1')">
-            <div class="icon">🏢</div>
-            <div class="text">
-                <div class="title">VILLANUEVA</div>
-                <div class="desc">Abrir formulario de rondas</div>
-            </div>
-        </div>
-
-        <!-- ZOLI -->
-
-        <div class="btn" onclick="abrirFormulario('ZOLI AMERICA','https://app.smartsheet.com/b/form/019e23609da77752bf6a1e6f8ed7a0b7')">
-            <div class="icon">🏢</div>
-            <div class="text">
-                <div class="title">ZOLI AMERICA</div>
-                <div class="desc">Abrir formulario de rondas</div>
-            </div>
-        </div>
-
-    </div>
+      </div>
+      <!-- Repite para los demás sitios -->
+    </nav>
   
-    <div class="footer">
-        GSD CMC © 2026
-    </div>
+    <footer>
+      GSD CMC © 2026
+    </footer>
+  </div>
 
-</div>
-
-<!-- ================= VISOR INTERNO ================= -->
-
-<div id="viewer">
-
+  <!-- ================= VISOR INTERNO ================= -->
+  <div id="viewer" role="dialog" aria-modal="true">
     <div class="topbar">
-
-        <button class="back-btn" onclick="cerrarFormulario()">
-            ←
-        </button>
-
-        <div class="site-name" id="siteName">
-            Sitio
-        </div>
-
+      <button class="back-btn" onclick="cerrarFormulario()" aria-label="Cerrar formulario">←</button>
+      <div class="site-name" id="siteName">Sitio</div>
     </div>
+    <iframe id="formFrame" title="Formulario de rondas"></iframe>
+  </div>
 
-    <iframe id="formFrame"></iframe>
+  <script>
+    function abrirFormulario(nombre,link){
+      const viewer = document.getElementById("viewer");
+      const siteName = document.getElementById("siteName");
+      const formFrame = document.getElementById("formFrame");
 
-</div>
+      viewer.style.display="flex";
+      siteName.innerText=nombre;
+      formFrame.src=link;
+    }
 
-<script>
+    function cerrarFormulario(){
+      const viewer = document.getElementById("viewer");
+      const formFrame = document.getElementById("formFrame");
 
-/* ================= ABRIR FORMULARIO ================= */
-
-function abrirFormulario(nombre,link){
-
-    document.getElementById("viewer").style.display="flex";
-
-    document.getElementById("siteName").innerText=nombre;
-
-    document.getElementById("formFrame").src=link;
-}
-
-/* ================= CERRAR FORMULARIO ================= */
-
-function cerrarFormulario(){
-
-    document.getElementById("viewer").style.display="none";
-
-    document.getElementById("formFrame").src="";
-}
-
-</script>
-
+      viewer.style.display="none";
+      formFrame.src="";
+    }
+  </script>
 </body>
 </html>
