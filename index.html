@@ -317,65 +317,105 @@ h1{
 </div>
 
 <script>
+<script>
 
 /* =====================================================
-   USUARIOS Y PERMISOS
+   USUARIOS OFICIALES GSD
 ===================================================== */
 
 const usuarios = {
 
-    /* ================= GUARDIAS ================= */
+    /* ================= HBI BUENA VISTA ================= */
 
-    "000000": {
-        nombre: "Guardia 1",
+    "HBI-BV": {
+        password: "gsd123",
+        nombre: "Guardia HBI Buena Vista",
         rol: "Guardia",
-        formularios: ["HBI BUENA VISTA"]
-    },
-
-    "000001": {
-        nombre: "Guardia 2",
-        rol: "Guardia",
-        formularios: ["HBI CHOLOMA"]
-    },
-
-    "000002": {
-        nombre: "Guardia 3",
-        rol: "Guardia",
-        formularios: ["HANIL"]
-    },
-
-    /*
-        AGREGA LOS DEMÁS GUARDIAS
-    */
-
-    /* ================= SUPERVISORES ================= */
-
-    "SUP001": {
-        nombre: "Supervisor 1",
-        rol: "Supervisor",
         formularios: [
-            "HBI BUENA VISTA",
-            "HBI CHOLOMA",
-            "HANIL",
-            "RIO NANCE",
-            "SAN ANTONIO",
-            "ULUATEX",
-            "VILLANUEVA",
-            "ZOLI AMERICA"
+            "HBI BUENA VISTA"
         ]
     },
 
-    "SUP002": {
-        nombre: "Supervisor 2",
-        rol: "Supervisor",
+    /* ================= HBI CHOLOMA ================= */
+
+    "HBI-CH": {
+        password: "gsd1020",
+        nombre: "Guardia HBI Choloma",
+        rol: "Guardia",
         formularios: [
-            "HANIL",
+            "HBI CHOLOMA"
+        ]
+    },
+
+    /* ================= HANIL ================= */
+
+    "HAN-PTC": {
+        password: "gsd-1014",
+        nombre: "Guardia HANIL",
+        rol: "Guardia",
+        formularios: [
+            "HANIL"
+        ]
+    },
+
+    /* ================= RIO NANCE ================= */
+
+    "Rondin-RN": {
+        password: "gsd1024",
+        nombre: "Guardia Rio Nance",
+        rol: "Guardia",
+        formularios: [
             "RIO NANCE"
+        ]
+    },
+
+    /* ================= SAN ANTONIO ================= */
+
+    "SAT-SJ": {
+        password: "gsd2030",
+        nombre: "Guardia San Antonio",
+        rol: "Guardia",
+        formularios: [
+            "SAN ANTONIO"
+        ]
+    },
+
+    /* ================= ULUATEX ================= */
+
+    "AKH": {
+        password: "gsd2010",
+        nombre: "Guardia ULUATEX",
+        rol: "Guardia",
+        formularios: [
+            "ULUATEX"
+        ]
+    },
+
+    /* ================= VILLANUEVA ================= */
+
+    "VILLANUEVA": {
+        password: "gsd2563",
+        nombre: "Guardia Villanueva",
+        rol: "Guardia",
+        formularios: [
+            "VILLANUEVA"
+        ]
+    },
+
+    /* ================= ZOLI AMERICA ================= */
+
+    "AMERICA": {
+        password: "gsd1515",
+        nombre: "Guardia Zoli America",
+        rol: "Guardia",
+        formularios: [
+            "ZOLI AMERICA"
         ]
     }
 
 };
 
+</script>
 /* =====================================================
    LOGIN
 ===================================================== */
