@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "rondas-hn",
+  "name": "rondas-honduras",
   "compatibility_date": "2026-05-21",
   "observability": {
     "enabled": true
