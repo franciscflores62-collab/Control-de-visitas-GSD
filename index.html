@@ -174,7 +174,7 @@
   </div>
   <div>
     <h1>Formato de solicitud de visitas</h1>
-    <p>Control de Visitas Gildan NIC</p>
+    <p>Control de Visitas Gildan GSD</p>
   </div>
 </div>
 
@@ -451,7 +451,7 @@
 
     const fd = new FormData(form);
     const payload = {};
-    fd.forEach((value, key) => payload[key] = value === '' ? null : value);
+    fd.forEach((value, key) => payload[key] = value);
     payload['IngresaraVehiculo'] = vehToggle.checked;
     payload['CantidadVisitantes'] = parseInt(visitCount.value);
 
