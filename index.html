@@ -142,6 +142,21 @@
   #status.ok{display:block;background:#E7F5EE;color:var(--ok);border:1px solid #BEE3CF;}
   #status.err{display:block;background:#FBEAE7;color:var(--err);border:1px solid #F2C8BF;}
 
+  .autocomplete{position:relative;}
+  .ac-list{
+    position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:20;
+    background:#fff;border:1px solid var(--line);border-radius:8px;
+    max-height:180px;overflow-y:auto;box-shadow:0 6px 16px rgba(15,42,74,.12);
+    display:none;
+  }
+  .ac-list.show{display:block;}
+  .ac-item{padding:8px 11px;font-size:13.5px;cursor:pointer;}
+  .ac-item:hover,.ac-item.active{background:var(--blue-light);}
+  .ac-empty{padding:8px 11px;font-size:13px;color:var(--muted);}
+
+  #fechaFinField{display:none;}
+  #fechaFinField.show{display:flex;}
+
   @media (max-width:480px){
     .topbar{padding:16px;}
     .topbar h1{font-size:16px;}
@@ -159,7 +174,7 @@
   </div>
   <div>
     <h1>Formato de solicitud de visitas</h1>
-    <p>Control de Visitas Gildan</p>
+    <p>Control de Visitas Gildan NIC</p>
   </div>
 </div>
 
@@ -169,42 +184,47 @@
     <div class="card">
       <h2>Datos generales</h2>
       <div class="grid">
-        <div class="field">
+        <div class="field autocomplete">
           <label>Solicitante <span class="req">*</span></label>
-          <input type="text" name="Solicitante" required placeholder="Nombre y apellido">
+          <input type="text" id="solicitanteInput" name="Solicitante" required placeholder="Escribe un nombre" autocomplete="off">
+          <div class="ac-list" id="solicitanteList"></div>
         </div>
-        <div class="field">
+        <div class="field autocomplete">
           <label>Gerente (aprobador) <span class="req">*</span></label>
-          <input type="text" name="Gerente" required placeholder="Nombre del aprobador">
+          <input type="text" id="gerenteInput" name="Gerente" required placeholder="Escribe un nombre" autocomplete="off">
+          <div class="ac-list" id="gerenteList"></div>
         </div>
         <div class="field">
           <label>Tipo de visita <span class="req">*</span></label>
-          <select name="TipoVisita" required>
+          <select name="TipoVisita" id="tipoVisita" required>
             <option value="">Selecciona una opción</option>
-            <option>Contratista</option>
-            <option>Proveedor</option>
-            <option>Visita corporativa</option>
-            <option>Auditoría</option>
-            <option>Otro</option>
+            <option>Un día</option>
+            <option>Múltiples días</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>País <span class="req">*</span></label>
+          <select name="Pais" id="paisSelect" required>
+            <option value="">Selecciona una opción</option>
+            <option>Honduras</option>
+            <option>Nicaragua</option>
+            <option>República Dominicana</option>
           </select>
         </div>
         <div class="field">
           <label>Plantas <span class="req">*</span></label>
-          <select name="Plantas" required>
-            <option value="">Selecciona una opción</option>
-            <option>Planta 1</option>
-            <option>Planta 2</option>
-            <option>Planta 3</option>
-            <option>CEDI</option>
+          <select name="Plantas" id="plantasSelect" required disabled>
+            <option value="">Primero selecciona un país</option>
           </select>
         </div>
         <div class="field">
           <label>Portón de acceso <span class="req">*</span></label>
           <select name="PortonAcceso" required>
             <option value="">Selecciona una opción</option>
-            <option>Portón principal</option>
-            <option>Portón 2</option>
-            <option>Portón de carga</option>
+            <option>Choltex</option>
+            <option>Hontex</option>
+            <option>Recepción 8-9</option>
+            <option>Recepción 6-1</option>
           </select>
         </div>
         <div class="field">
@@ -215,7 +235,7 @@
           <label>Fecha de ingreso <span class="req">*</span></label>
           <input type="date" name="FechaIngreso" required>
         </div>
-        <div class="field">
+        <div class="field" id="fechaFinField">
           <label>Fecha de finalización</label>
           <input type="date" name="FechaFin">
         </div>
@@ -277,6 +297,97 @@
 </div>
 
 <script>
+  // ── 0a. País → Plantas ────────────────────────────────
+  const PLANTAS_POR_PAIS = {
+    'Honduras': ['Biomasa','Choltex','Gilchem','HDC','Hosiery Rio Nance','Hontex','Hosiery Factory','Mayan','Properties/Corporativo','Sulatex','Taller Regional','Rio Market','Reclutamiento','San Antonio','Villanueva'],
+    'Nicaragua': ['San Marcos','Annic 2','Rivas','Chinandega','Annic 1'],
+    'República Dominicana': ['Dortex','Gildan Lasse','Gildan LA','Gildan San Isidro','Gildan SI','Gildan SPM']
+  };
+  const paisSelect = document.getElementById('paisSelect');
+  const plantasSelect = document.getElementById('plantasSelect');
+  paisSelect.addEventListener('change', () => {
+    const plantas = PLANTAS_POR_PAIS[paisSelect.value];
+    plantasSelect.innerHTML = '';
+    if (!plantas){
+      plantasSelect.disabled = true;
+      plantasSelect.innerHTML = '<option value="">Primero selecciona un país</option>';
+      return;
+    }
+    plantasSelect.disabled = false;
+    plantasSelect.innerHTML = '<option value="">Selecciona una opción</option>' +
+      plantas.map(p => `<option>${p}</option>`).join('');
+  });
+
+  // ── 0b. Tipo de visita → mostrar fecha de finalización ──
+  const tipoVisita = document.getElementById('tipoVisita');
+  const fechaFinField = document.getElementById('fechaFinField');
+  tipoVisita.addEventListener('change', () => {
+    fechaFinField.classList.toggle('show', tipoVisita.value === 'Múltiples días');
+  });
+
+  // ── 0c. Autocompletado Solicitante / Gerente ─────────
+  // *** Reemplaza esta URL por la URL del flujo de búsqueda de usuarios ***
+  const SEARCH_FLOW_URL = 'https://PEGA_AQUI_TU_URL_DE_BUSQUEDA_DE_USUARIOS';
+
+  function setupAutocomplete(inputId, listId){
+    const input = document.getElementById(inputId);
+    const list = document.getElementById(listId);
+    let debounceTimer;
+
+    input.addEventListener('input', () => {
+      clearTimeout(debounceTimer);
+      const term = input.value.trim();
+      if (term.length < 2){
+        list.classList.remove('show');
+        return;
+      }
+      debounceTimer = setTimeout(async () => {
+        try {
+          const res = await fetch(SEARCH_FLOW_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ searchTerm: term })
+          });
+          const users = await res.json();
+          renderSuggestions(users, list, input);
+        } catch (err) {
+          list.innerHTML = '<div class="ac-empty">No se pudo buscar. Verifica la conexión.</div>';
+          list.classList.add('show');
+        }
+      }, 300);
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!input.contains(e.target) && !list.contains(e.target)){
+        list.classList.remove('show');
+      }
+    });
+  }
+
+  function renderSuggestions(users, list, input){
+    if (!users || users.length === 0){
+      list.innerHTML = '<div class="ac-empty">Sin resultados</div>';
+      list.classList.add('show');
+      return;
+    }
+    list.innerHTML = users.map(u =>
+      `<div class="ac-item" data-name="${u.displayName || u.DisplayName || ''}" data-email="${u.mail || u.Mail || ''}">
+        ${u.displayName || u.DisplayName || ''} <span style="color:var(--muted);">${u.mail || u.Mail || ''}</span>
+      </div>`
+    ).join('');
+    list.classList.add('show');
+    list.querySelectorAll('.ac-item').forEach(item => {
+      item.addEventListener('click', () => {
+        input.value = item.dataset.name;
+        input.dataset.email = item.dataset.email;
+        list.classList.remove('show');
+      });
+    });
+  }
+
+  setupAutocomplete('solicitanteInput', 'solicitanteList');
+  setupAutocomplete('gerenteInput', 'gerenteList');
+
   // ── 1. Vehículo toggle ──────────────────────────────
   const vehToggle = document.getElementById('vehToggle');
   const vehFields = document.getElementById('vehiculoFields');
