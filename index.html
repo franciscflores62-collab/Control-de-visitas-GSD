@@ -331,7 +331,7 @@
 <script>
   // ── 0a. Cargar configuración (País / Plantas / Portón) en vivo ──
   // *** Reemplaza esta URL por la URL del flujo "Obtener configuración del formulario" ***
-  const CONFIG_FLOW_URL ='https://default1aaf0fd99e8b4375a2a450e7a07b39.51.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/03/workflows/c98a597ed9894ed78f7e18e9e6423049/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=xrEoDZFUV3ks58WNTrdmTKw926rOC-ie53VoclRWRmc';
+  const CONFIG_FLOW_URL = 'https://default1aaf0fd99e8b4375a2a450e7a07b39.51.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/03/workflows/c98a597ed9894ed78f7e18e9e6423049/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=xrEoDZFUV3ks58WNTrdmTKw926rOC-ie53VoclRWRmc';
 
   const paisSelect = document.getElementById('paisSelect');
   const plantasSelect = document.getElementById('plantasSelect');
@@ -340,7 +340,7 @@
 
   async function cargarConfiguracion(){
     try {
-      const res = await fetch(CONFIG_FLOW_URL);
+      const res = await fetch(CONFIG_FLOW_URL, { method: 'POST' });
       const rows = await res.json(); // [{Tipo, Pais, Valor}, ...]
 
       const paises = rows.filter(r => r.Tipo === 'Pais').map(r => r.Valor);
