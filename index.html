@@ -31,7 +31,9 @@
     padding:22px 28px;
     display:flex;
     align-items:center;
+    justify-content:center;
     gap:14px;
+    text-align:center;
   }
   .topbar .logo{
     width:38px;height:38px;border-radius:8px;
@@ -137,10 +139,31 @@
   button:disabled{opacity:.6;cursor:not-allowed;}
 
   #status{
-    margin-top:14px;padding:12px 14px;border-radius:8px;font-size:14px;display:none;
+    position:fixed;
+    top:50%;left:50%;
+    transform:translate(-50%,-50%) scale(0.96);
+    max-width:420px;
+    width:calc(100% - 48px);
+    margin-top:0;
+    padding:18px 20px;
+    border-radius:12px;
+    font-size:15px;
+    font-weight:500;
+    text-align:center;
+    box-shadow:0 12px 32px rgba(15,42,74,.22);
+    z-index:1000;
+    display:none;
+    opacity:0;
+    transition:opacity .18s ease, transform .18s ease;
   }
-  #status.ok{display:block;background:#E7F5EE;color:var(--ok);border:1px solid #BEE3CF;}
-  #status.err{display:block;background:#FBEAE7;color:var(--err);border:1px solid #F2C8BF;}
+  #status.show{display:block;opacity:1;transform:translate(-50%,-50%) scale(1);}
+  #status-backdrop{
+    position:fixed;inset:0;background:rgba(15,42,74,.28);
+    z-index:999;display:none;
+  }
+  #status-backdrop.show{display:block;}
+  #status.ok{background:#FFFFFF;color:var(--ok);border:1px solid #BEE3CF;}
+  #status.err{background:#FFFFFF;color:var(--err);border:1px solid #F2C8BF;}
 
   .autocomplete{position:relative;}
   .ac-list{
@@ -156,6 +179,19 @@
 
   #fechaFinField{display:none;}
   #fechaFinField.show{display:flex;}
+
+  .checkbox-group{
+    display:flex;flex-wrap:wrap;gap:8px 10px;
+    border:1px solid #CBD3DE;border-radius:8px;padding:10px 12px;
+    min-height:44px;align-items:center;
+  }
+  .checkbox-group.error{border-color:var(--err);}
+  .chk-item{
+    display:flex;align-items:center;gap:6px;
+    background:var(--blue-light);border-radius:6px;padding:5px 10px;
+    font-size:13.5px;cursor:pointer;
+  }
+  .chk-item input{width:auto;margin:0;}
 
   @media (max-width:480px){
     .topbar{padding:16px;}
@@ -174,7 +210,7 @@
   </div>
   <div>
     <h1>Formato de solicitud de visitas</h1>
-    <p>Control de Visitas Gildan GSD</p>
+    <p>Control de Visitas GSD</p>
   </div>
 </div>
 
@@ -211,11 +247,11 @@
             <option>República Dominicana</option>
           </select>
         </div>
-        <div class="field">
+        <div class="field full">
           <label>Plantas <span class="req">*</span></label>
-          <select name="Plantas" id="plantasSelect" required disabled>
-            <option value="">Primero selecciona un país</option>
-          </select>
+          <div id="plantasContainer" class="checkbox-group">
+            <span class="hint">Primero selecciona un país</span>
+          </div>
         </div>
         <div class="field">
           <label>Portón de acceso <span class="req">*</span></label>
@@ -292,6 +328,7 @@
       <button type="submit" class="primary" id="submitBtn">Enviar solicitud</button>
     </div>
 
+    <div id="status-backdrop"></div>
     <div id="status"></div>
   </form>
 </div>
@@ -304,18 +341,17 @@
     'República Dominicana': ['Dortex','Gildan Lasse','Gildan LA','Gildan San Isidro','Gildan SI','Gildan SPM']
   };
   const paisSelect = document.getElementById('paisSelect');
-  const plantasSelect = document.getElementById('plantasSelect');
+  const plantasContainer = document.getElementById('plantasContainer');
   paisSelect.addEventListener('change', () => {
     const plantas = PLANTAS_POR_PAIS[paisSelect.value];
-    plantasSelect.innerHTML = '';
+    plantasContainer.classList.remove('error');
     if (!plantas){
-      plantasSelect.disabled = true;
-      plantasSelect.innerHTML = '<option value="">Primero selecciona un país</option>';
+      plantasContainer.innerHTML = '<span class="hint">Primero selecciona un país</span>';
       return;
     }
-    plantasSelect.disabled = false;
-    plantasSelect.innerHTML = '<option value="">Selecciona una opción</option>' +
-      plantas.map(p => `<option>${p}</option>`).join('');
+    plantasContainer.innerHTML = plantas.map(p =>
+      `<label class="chk-item"><input type="checkbox" name="Plantas" value="${p}">${p}</label>`
+    ).join('');
   });
 
   // ── 0b. Tipo de visita → mostrar fecha de finalización ──
@@ -327,7 +363,8 @@
 
   // ── 0c. Autocompletado Solicitante / Gerente ─────────
   // *** Reemplaza esta URL por la URL del flujo de búsqueda de usuarios ***
-  const SEARCH_FLOW_URL = 'https://default1aaf0fd99e8b4375a2a450e7a07b39.51.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/20/workflows/e400db05ab6b43e0aeeaf1c3aa553e41/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=AO6AO5Jq_mLJkDVt98HG5zB9JRR17KcYqNwGK-Abpnk';
+  const SEARCH_FLOW_URL = 'https://default1aaf0fd99e8b4375a2a450e7a07b39.51.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/20/workflows/e400db05ab6b43e0aeeaf1c3aa553e41/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=AO6AO5Jq_mLJkDVt98HG5zB9JRR17KcYqNwGK-Abpnk
+';
 
   function setupAutocomplete(inputId, listId){
     const input = document.getElementById(inputId);
@@ -440,18 +477,51 @@
 
   const form = document.getElementById('visitForm');
   const statusBox = document.getElementById('status');
+  const statusBackdrop = document.getElementById('status-backdrop');
   const submitBtn = document.getElementById('submitBtn');
+
+  function showStatus(type, message, autoHideMs){
+    statusBox.className = type;
+    statusBox.textContent = message;
+    statusBox.classList.add('show');
+    statusBackdrop.classList.add('show');
+    if (autoHideMs){
+      clearTimeout(showStatus._t);
+      showStatus._t = setTimeout(hideStatus, autoHideMs);
+    }
+  }
+  function hideStatus(){
+    statusBox.classList.remove('show');
+    statusBackdrop.classList.remove('show');
+  }
+  statusBackdrop.addEventListener('click', hideStatus);
 
   document.getElementById('cancelBtn').addEventListener('click', () => form.reset());
 
+  function fd_getPlantas(){
+    return Array.from(plantasContainer.querySelectorAll('input[name="Plantas"]:checked'))
+      .map(cb => cb.value);
+  }
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    statusBox.className = '';
-    statusBox.style.display = 'none';
+    hideStatus();
+
+    const plantasChecked = fd_getPlantas();
+    if (plantasChecked.length === 0){
+      plantasContainer.classList.add('error');
+      showStatus('err', 'Selecciona al menos una planta.', 3000);
+      return;
+    }
+    plantasContainer.classList.remove('error');
 
     const fd = new FormData(form);
     const payload = {};
-    fd.forEach((value, key) => payload[key] = value);
+    fd.forEach((value, key) => {
+      if (key === 'Plantas') return;
+      payload[key] = value === '' ? null : value;
+    });
+    payload['Plantas'] = plantasChecked;
     payload['IngresaraVehiculo'] = vehToggle.checked;
     payload['CantidadVisitantes'] = parseInt(visitCount.value);
 
@@ -465,19 +535,17 @@
         body: JSON.stringify(payload)
       });
       if (!res.ok) throw new Error('Respuesta ' + res.status);
-      statusBox.className = 'ok';
-      statusBox.textContent = 'Solicitud enviada correctamente.';
-      statusBox.style.display = 'block';
+      showStatus('ok', 'Solicitud enviada correctamente.', 4000);
       form.reset();
       vehFields.classList.remove('show');
       renderVisitantes(1);
       visitCount.value = 1;
       visitCountOut.textContent = 1;
       fileList.textContent = 'No hay nada adjunto.';
+      plantasContainer.innerHTML = '<span class="hint">Primero selecciona un país</span>';
+      fechaFinField.classList.remove('show');
     } catch (err) {
-      statusBox.className = 'err';
-      statusBox.textContent = 'No se pudo enviar la solicitud. Verifica tu conexión e inténtalo de nuevo.';
-      statusBox.style.display = 'block';
+      showStatus('err', 'No se pudo enviar la solicitud. Verifica tu conexión e inténtalo de nuevo.', 4000);
     } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = 'Enviar solicitud';
