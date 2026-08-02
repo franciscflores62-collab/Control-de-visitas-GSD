@@ -223,11 +223,13 @@
         <div class="field autocomplete">
           <label>Solicitante <span class="req">*</span></label>
           <input type="text" id="solicitanteInput" name="Solicitante" required placeholder="Escribe un nombre" autocomplete="off">
+          <input type="hidden" id="solicitanteEmail" name="SolicitanteEmail">
           <div class="ac-list" id="solicitanteList"></div>
         </div>
         <div class="field autocomplete">
           <label>Gerente (aprobador) <span class="req">*</span></label>
           <input type="text" id="gerenteInput" name="Gerente" required placeholder="Escribe un nombre" autocomplete="off">
+          <input type="hidden" id="gerenteEmail" name="GerenteEmail">
           <div class="ac-list" id="gerenteList"></div>
         </div>
         <div class="field">
@@ -365,12 +367,14 @@
   // *** Reemplaza esta URL por la URL del flujo de búsqueda de usuarios ***
   const SEARCH_FLOW_URL = 'https://default1aaf0fd99e8b4375a2a450e7a07b39.51.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/20/workflows/e400db05ab6b43e0aeeaf1c3aa553e41/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=AO6AO5Jq_mLJkDVt98HG5zB9JRR17KcYqNwGK-Abpnk';
 
-  function setupAutocomplete(inputId, listId){
+  function setupAutocomplete(inputId, listId, emailFieldId){
     const input = document.getElementById(inputId);
     const list = document.getElementById(listId);
+    const emailField = document.getElementById(emailFieldId);
     let debounceTimer;
 
     input.addEventListener('input', () => {
+      emailField.value = ''; // si el usuario sigue escribiendo, invalida la selección previa
       clearTimeout(debounceTimer);
       const term = input.value.trim();
       if (term.length < 2){
@@ -385,7 +389,7 @@
             body: JSON.stringify({ searchTerm: term })
           });
           const users = await res.json();
-          renderSuggestions(users, list, input);
+          renderSuggestions(users, list, input, emailField);
         } catch (err) {
           list.innerHTML = '<div class="ac-empty">No se pudo buscar. Verifica la conexión.</div>';
           list.classList.add('show');
@@ -400,7 +404,7 @@
     });
   }
 
-  function renderSuggestions(users, list, input){
+  function renderSuggestions(users, list, input, emailField){
     if (!users || users.length === 0){
       list.innerHTML = '<div class="ac-empty">Sin resultados</div>';
       list.classList.add('show');
@@ -415,14 +419,14 @@
     list.querySelectorAll('.ac-item').forEach(item => {
       item.addEventListener('click', () => {
         input.value = item.dataset.name;
-        input.dataset.email = item.dataset.email;
+        emailField.value = item.dataset.email;
         list.classList.remove('show');
       });
     });
   }
 
-  setupAutocomplete('solicitanteInput', 'solicitanteList');
-  setupAutocomplete('gerenteInput', 'gerenteList');
+  setupAutocomplete('solicitanteInput', 'solicitanteList', 'solicitanteEmail');
+  setupAutocomplete('gerenteInput', 'gerenteList', 'gerenteEmail');
 
   // ── 1. Vehículo toggle ──────────────────────────────
   const vehToggle = document.getElementById('vehToggle');
@@ -472,7 +476,7 @@
 
   // ── 4. Envío a Power Automate ────────────────────────
   // *** Reemplaza esta URL por la URL HTTP POST que genera tu flujo ***
-  const FLOW_URL = 'https://default1aaf0fd99e8b4375a2a450e7a07b39.51.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/05/workflows/a2bf8812b6a540148e6db7217c84d3ed/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=pexmOWX02p8-8f2blKMPWsLEUtDdmu5ypSOtm6G7iBA';
+  const FLOW_URL = 'https://PEGA_AQUI_TU_URL_DE_POWER_AUTOMATE';
 
   const form = document.getElementById('visitForm');
   const statusBox = document.getElementById('status');
@@ -513,6 +517,19 @@
       return;
     }
     plantasContainer.classList.remove('error');
+
+    const solicitanteEmail = document.getElementById('solicitanteEmail');
+    const gerenteEmail = document.getElementById('gerenteEmail');
+    if (!solicitanteEmail.value){
+      showStatus('err', 'Selecciona al Solicitante de la lista de sugerencias.', 3500);
+      document.getElementById('solicitanteInput').focus();
+      return;
+    }
+    if (!gerenteEmail.value){
+      showStatus('err', 'Selecciona al Gerente (aprobador) de la lista de sugerencias.', 3500);
+      document.getElementById('gerenteInput').focus();
+      return;
+    }
 
     const fd = new FormData(form);
     const payload = {};
