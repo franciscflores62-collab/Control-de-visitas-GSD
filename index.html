@@ -242,27 +242,20 @@
         </div>
         <div class="field">
           <label>País <span class="req">*</span></label>
-          <select name="Pais" id="paisSelect" required>
-            <option value="">Selecciona una opción</option>
-            <option>Honduras</option>
-            <option>Nicaragua</option>
-            <option>República Dominicana</option>
+          <select name="Pais" id="paisSelect" required disabled>
+            <option value="">Cargando opciones...</option>
           </select>
         </div>
-        <div class="field full">
+        <div class="field">
           <label>Plantas <span class="req">*</span></label>
-          <div id="plantasContainer" class="checkbox-group">
-            <span class="hint">Primero selecciona un país</span>
-          </div>
+          <select name="Plantas" id="plantasSelect" required disabled>
+            <option value="">Primero selecciona un país</option>
+          </select>
         </div>
         <div class="field">
           <label>Portón de acceso <span class="req">*</span></label>
-          <select name="PortonAcceso" required>
-            <option value="">Selecciona una opción</option>
-            <option>Choltex</option>
-            <option>Hontex</option>
-            <option>Recepción 8-9</option>
-            <option>Recepción 6-1</option>
+          <select name="PortonAcceso" id="portonSelect" required disabled>
+            <option value="">Cargando opciones...</option>
           </select>
         </div>
         <div class="field">
@@ -336,24 +329,52 @@
 </div>
 
 <script>
-  // ── 0a. País → Plantas ────────────────────────────────
-  const PLANTAS_POR_PAIS = {
-    'Honduras': ['Biomasa','Choltex','Gilchem','HDC','Hosiery Rio Nance','Hontex','Hosiery Factory','Mayan','Properties/Corporativo','Sulatex','Taller Regional','Rio Market','Reclutamiento','San Antonio','Villanueva'],
-    'Nicaragua': ['San Marcos','Annic 2','Rivas','Chinandega','Annic 1'],
-    'República Dominicana': ['Dortex','Gildan Lasse','Gildan LA','Gildan San Isidro','Gildan SI','Gildan SPM']
-  };
+  // ── 0a. Cargar configuración (País / Plantas / Portón) en vivo ──
+  // *** Reemplaza esta URL por la URL del flujo "Obtener configuración del formulario" ***
+  const CONFIG_FLOW_URL ='https://default1aaf0fd99e8b4375a2a450e7a07b39.51.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/03/workflows/c98a597ed9894ed78f7e18e9e6423049/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=xrEoDZFUV3ks58WNTrdmTKw926rOC-ie53VoclRWRmc';
+
   const paisSelect = document.getElementById('paisSelect');
-  const plantasContainer = document.getElementById('plantasContainer');
+  const plantasSelect = document.getElementById('plantasSelect');
+  const portonSelect = document.getElementById('portonSelect');
+  let PLANTAS_POR_PAIS = {};
+
+  async function cargarConfiguracion(){
+    try {
+      const res = await fetch(CONFIG_FLOW_URL);
+      const rows = await res.json(); // [{Tipo, Pais, Valor}, ...]
+
+      const paises = rows.filter(r => r.Tipo === 'Pais').map(r => r.Valor);
+      const portones = rows.filter(r => r.Tipo === 'Porton').map(r => r.Valor);
+      PLANTAS_POR_PAIS = {};
+      rows.filter(r => r.Tipo === 'Planta').forEach(r => {
+        if (!PLANTAS_POR_PAIS[r.Pais]) PLANTAS_POR_PAIS[r.Pais] = [];
+        PLANTAS_POR_PAIS[r.Pais].push(r.Valor);
+      });
+
+      paisSelect.innerHTML = '<option value="">Selecciona una opción</option>' +
+        paises.map(p => `<option>${p}</option>`).join('');
+      paisSelect.disabled = false;
+
+      portonSelect.innerHTML = '<option value="">Selecciona una opción</option>' +
+        portones.map(p => `<option>${p}</option>`).join('');
+      portonSelect.disabled = false;
+    } catch (err) {
+      paisSelect.innerHTML = '<option value="">No se pudo cargar. Recarga la página.</option>';
+      portonSelect.innerHTML = '<option value="">No se pudo cargar. Recarga la página.</option>';
+    }
+  }
+  cargarConfiguracion();
+
   paisSelect.addEventListener('change', () => {
     const plantas = PLANTAS_POR_PAIS[paisSelect.value];
-    plantasContainer.classList.remove('error');
     if (!plantas){
-      plantasContainer.innerHTML = '<span class="hint">Primero selecciona un país</span>';
+      plantasSelect.disabled = true;
+      plantasSelect.innerHTML = '<option value="">Primero selecciona un país</option>';
       return;
     }
-    plantasContainer.innerHTML = plantas.map(p =>
-      `<label class="chk-item"><input type="checkbox" name="Plantas" value="${p}">${p}</label>`
-    ).join('');
+    plantasSelect.disabled = false;
+    plantasSelect.innerHTML = '<option value="">Selecciona una opción</option>' +
+      plantas.map(p => `<option>${p}</option>`).join('');
   });
 
   // ── 0b. Tipo de visita → mostrar fecha de finalización ──
@@ -501,22 +522,9 @@
 
   document.getElementById('cancelBtn').addEventListener('click', () => form.reset());
 
-  function fd_getPlantas(){
-    return Array.from(plantasContainer.querySelectorAll('input[name="Plantas"]:checked'))
-      .map(cb => cb.value);
-  }
-
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     hideStatus();
-
-    const plantasChecked = fd_getPlantas();
-    if (plantasChecked.length === 0){
-      plantasContainer.classList.add('error');
-      showStatus('err', 'Selecciona al menos una planta.', 3000);
-      return;
-    }
-    plantasContainer.classList.remove('error');
 
     const solicitanteEmail = document.getElementById('solicitanteEmail');
     const gerenteEmail = document.getElementById('gerenteEmail');
@@ -534,10 +542,8 @@
     const fd = new FormData(form);
     const payload = {};
     fd.forEach((value, key) => {
-      if (key === 'Plantas') return;
       payload[key] = value === '' ? null : value;
     });
-    payload['Plantas'] = plantasChecked;
     payload['IngresaraVehiculo'] = vehToggle.checked;
     payload['CantidadVisitantes'] = parseInt(visitCount.value);
 
@@ -558,7 +564,8 @@
       visitCount.value = 1;
       visitCountOut.textContent = 1;
       fileList.textContent = 'No hay nada adjunto.';
-      plantasContainer.innerHTML = '<span class="hint">Primero selecciona un país</span>';
+      plantasSelect.disabled = true;
+      plantasSelect.innerHTML = '<option value="">Primero selecciona un país</option>';
       fechaFinField.classList.remove('show');
     } catch (err) {
       showStatus('err', 'No se pudo enviar la solicitud. Verifica tu conexión e inténtalo de nuevo.', 4000);
