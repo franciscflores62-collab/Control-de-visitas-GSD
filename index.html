@@ -337,27 +337,29 @@
   const plantasSelect = document.getElementById('plantasSelect');
   const portonSelect = document.getElementById('portonSelect');
   let PLANTAS_POR_PAIS = {};
+  let PORTONES_POR_PLANTA = {};
 
   async function cargarConfiguracion(){
     try {
       const res = await fetch(CONFIG_FLOW_URL, { method: 'POST' });
-      const rows = await res.json(); // [{Tipo, Pais, Valor}, ...]
+      const rows = await res.json(); // [{Tipo, Pais, Planta, Valor}, ...]
 
       const paises = rows.filter(r => r.Tipo === 'Pais').map(r => r.Valor);
-      const portones = rows.filter(r => r.Tipo === 'Porton').map(r => r.Valor);
       PLANTAS_POR_PAIS = {};
       rows.filter(r => r.Tipo === 'Planta').forEach(r => {
         if (!PLANTAS_POR_PAIS[r.Pais]) PLANTAS_POR_PAIS[r.Pais] = [];
         PLANTAS_POR_PAIS[r.Pais].push(r.Valor);
       });
+      PORTONES_POR_PLANTA = {};
+      rows.filter(r => r.Tipo === 'Porton').forEach(r => {
+        if (!PORTONES_POR_PLANTA[r.Planta]) PORTONES_POR_PLANTA[r.Planta] = [];
+        PORTONES_POR_PLANTA[r.Planta].push(r.Valor);
+      });
 
       paisSelect.innerHTML = '<option value="">Selecciona una opción</option>' +
         paises.map(p => `<option>${p}</option>`).join('');
       paisSelect.disabled = false;
-
-      portonSelect.innerHTML = '<option value="">Selecciona una opción</option>' +
-        portones.map(p => `<option>${p}</option>`).join('');
-      portonSelect.disabled = false;
+      portonSelect.innerHTML = '<option value="">Primero selecciona una planta</option>';
     } catch (err) {
       paisSelect.innerHTML = '<option value="">No se pudo cargar. Recarga la página.</option>';
       portonSelect.innerHTML = '<option value="">No se pudo cargar. Recarga la página.</option>';
@@ -367,6 +369,8 @@
 
   paisSelect.addEventListener('change', () => {
     const plantas = PLANTAS_POR_PAIS[paisSelect.value];
+    portonSelect.disabled = true;
+    portonSelect.innerHTML = '<option value="">Primero selecciona una planta</option>';
     if (!plantas){
       plantasSelect.disabled = true;
       plantasSelect.innerHTML = '<option value="">Primero selecciona un país</option>';
@@ -375,6 +379,18 @@
     plantasSelect.disabled = false;
     plantasSelect.innerHTML = '<option value="">Selecciona una opción</option>' +
       plantas.map(p => `<option>${p}</option>`).join('');
+  });
+
+  plantasSelect.addEventListener('change', () => {
+    const portones = PORTONES_POR_PLANTA[plantasSelect.value];
+    if (!portones){
+      portonSelect.disabled = true;
+      portonSelect.innerHTML = '<option value="">Sin portones asignados a esta planta</option>';
+      return;
+    }
+    portonSelect.disabled = false;
+    portonSelect.innerHTML = '<option value="">Selecciona una opción</option>' +
+      portones.map(p => `<option>${p}</option>`).join('');
   });
 
   // ── 0b. Tipo de visita → mostrar fecha de finalización ──
@@ -566,6 +582,8 @@
       fileList.textContent = 'No hay nada adjunto.';
       plantasSelect.disabled = true;
       plantasSelect.innerHTML = '<option value="">Primero selecciona un país</option>';
+      portonSelect.disabled = true;
+      portonSelect.innerHTML = '<option value="">Primero selecciona una planta</option>';
       fechaFinField.classList.remove('show');
     } catch (err) {
       showStatus('err', 'No se pudo enviar la solicitud. Verifica tu conexión e inténtalo de nuevo.', 4000);
